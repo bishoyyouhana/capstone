@@ -9,6 +9,20 @@ import digitalio
 import board
 import adafruit_ds3231
 from time import struct_time
+import adafruit_dht
+
+
+
+hall_pin = digitalio.DigitalInOut(board.GP16)
+print("value of hall pin : ", hall_pin.value)
+print("value of hall pin : ", hall_pin.value)
+last_true = 0
+global_time_counter = 1
+speed = 0
+circumference = 14*2*3.14
+
+humidity = 53
+#humidity = adafruit_dht.DHT22(board.GP28).humidity
 
 
 class BMP:
@@ -110,6 +124,8 @@ light_pin =  digitalio.DigitalInOut(board.GP12)
 # True means it's dark
 
 
+
+
 print("light pin val")
 print("\n\n", light_pin.value)
 
@@ -157,21 +173,22 @@ y_position = 30
 print("x position: ", x_position, "y position: ", y_position)
 bitmap.draw(display, x_position, y_position)
 
-display.txt_set_cursor(600, display.height // 10 - 20)
-display.txt_color(WHITE, BLACK)
-display.txt_size(2)
-display.txt_write("52%")
+#display.txt_set_cursor(600, display.height // 10 - 20)
+#display.txt_color(WHITE, BLACK)
+#display.txt_size(2)
+#display.txt_write("{}%".format(humdity = adafruit_dht.DHT22(board.GP28).humdity))
 display.txt_set_cursor(360, display.height // 2 - 50)
 display.txt_color(WHITE, BLACK)
 display.txt_size(10)
-display.txt_write("23")
+display.txt_write("0")
 t = time.struct_time((2023, 4, 14, 11, 14, 15, 0, -1, -1))
 rtc.datetime = t
 # rtc.datetime(struct_time(tm_year=2010, tm_mon=1, tm_mday=1, tm_hour=0, tm_min=23, tm_sec=59, tm_wday=0, tm_yday=-1, tm_isdst=-1))
 
 while(1):
-    print("Value of light pin\n", light_pin.value)
-    
+    # print("value of hall pin :{}", hall_pin.value)
+    # print("Value of light pin\n", light_pin.value)
+
     if(prev_val_light is not light_pin.value):
         if(light_pin.value):
             bitmap = BMP("/moon.bmp")
@@ -180,24 +197,24 @@ while(1):
             print("x position: ", x_position, "y position: ", y_position)
             bitmap.draw(display, x_position, y_position)
             prev_val_light = True
-        else: 
+        else:
             bitmap = BMP("/sun.bmp")
             x_position = (display.width // 2) - (bitmap.width // 2)
             y_position = 30
             print("x position: ", x_position, "y position: ", y_position)
             bitmap.draw(display, x_position, y_position)
             prev_val_light = False
-            
-    
+
+
     t = rtc.datetime
-    print("datettime")
-    print("{}".format(t))
+    # print("datettime")
+    # print("{}".format(t))
     display.txt_set_cursor(300, 400)
     display.txt_color(WHITE, BLACK)
     display.txt_size(4)
     display.txt_write(" {}:{}".format(t.tm_hour, t.tm_min))
     # struct_time(tm_year=2010, tm_mon=1, tm_mday=1, tm_hour=0, tm_min=23, tm_sec=59, tm_wday=0, tm_yday=-1, tm_isdst=-1)
-    
+
     tmp = rtc.force_temperature_conversion()
     print("tmp")
     print("{}".format(tmp))
@@ -205,105 +222,29 @@ while(1):
     display.txt_color(WHITE, BLACK)
     display.txt_size(2)
     display.txt_write("{}°C".format(tmp))
-    
-    time.sleep(1)
-    
 
+    i = 0
+    while i < 10000:
+        if not hall_pin.value:
+            last_true = global_time_counter
+        speed = (circumference / ((global_time_counter+1 - last_true)))*36
 
+        time.sleep(0.0001)
+        i+=1
+        global_time_counter+=1
+    display.txt_set_cursor(360, display.height // 2 - 50)
+    display.txt_color(WHITE, BLACK)
+    display.txt_size(10)
+    display.txt_write("   ")
+    display.txt_set_cursor(360, display.height // 2 - 50)
+    display.txt_color(WHITE, BLACK)
+    display.txt_size(10)
+    display.txt_write("{}".format(int(speed)))
 
-bitmap = BMP("/sun.bmp")
-x_position = (display.width // 2) - (bitmap.width // 2)
-y_position = 30
-print("x position: ", x_position, "y position: ", y_position)
-bitmap.draw(display, x_position, y_position)
+    display.txt_set_cursor(600, display.height // 10 - 20)
+    display.txt_color(WHITE, BLACK)
+    display.txt_size(2)
+    #humidity = adafruit_dht.DHT22(board.GP28).humidity
+    display.txt_write("{}%".format(humidity))
+    print("SPEEEEDDDDD: ", speed)
 
-'''
-display.txt_set_cursor((display.width//8 ), display.height // 10 - 20)
-display.txt_color(WHITE, BLACK)
-display.txt_size(2)
-display.txt_write("24°C")
-'''
-
-display.txt_set_cursor(600, display.height // 10 - 20)
-display.txt_color(WHITE, BLACK)
-display.txt_size(2)
-display.txt_write("52%")
-display.txt_set_cursor(360, display.height // 2 - 50)
-display.txt_color(WHITE, BLACK)
-display.txt_size(10)
-display.txt_write("23")
-'''
-display.txt_set_cursor(300, 400)
-display.txt_color(WHITE, BLACK)
-display.txt_size(4)
-display.txt_write("10:37 PM")
-'''
-'''
-bitmap = BMP("/moon.bmp")
-x_position = (display.width // 2) - (bitmap.width // 2)
-y_position = 30
-print("x position: ", x_position, "y position: ", y_position)
-bitmap.draw(display, x_position, y_position)
-'''
-'''
-display.fill(WHITE)
-
-time.sleep(0.500)
-display.fill(YELLOW)
-time.sleep(0.500)
-display.fill(BLUE)
-time.sleep(0.500)
-display.fill(CYAN)
-time.sleep(0.500)
-display.fill(MAGENTA)
-time.sleep(0.500)
-display.fill(BLACK)
-display.circle(100, 100, 50, BLACK)
-display.fill_circle(100, 100, 49, BLUE)
-
-display.fill_rect(10, 10, 400, 200, GREEN)
-display.rect(10, 10, 400, 200, BLUE)
-display.fill_round_rect(200, 10, 200, 100, 10, RED)
-display.round_rect(200, 10, 200, 100, 10, BLUE)
-display.pixel(10, 10, BLACK)
-display.pixel(11, 11, BLACK)
-display.line(10, 10, 200, 100, RED)
-display.fill_triangle(200, 15, 250, 100, 150, 125, YELLOW)
-display.triangle(200, 15, 250, 100, 150, 125, BLACK)
-display.fill_ellipse(300, 100, 100, 40, BLUE)
-display.ellipse(300, 100, 100, 40, RED)
-display.curve(50, 100, 80, 40, 2, BLACK)
-display.fill_curve(50, 100, 78, 38, 2, WHITE)
-
-display.txt_set_cursor(display.width // 2 - 200, display.height // 2 - 20)
-display.txt_trans(WHITE)
-display.txt_size(2)
-testvar = 99
-display.txt_write("Hello guys!!!!")
-
-# display.touch_init(int_pin)
-display.touch_enable(True)
-
-x_scale = 1024 / display.width
-y_scale = 1024 / display.height
-
-# Main loop:
-while True:
-    if display.touched():
-        coords = display.touch_read()
-        display.fill_circle(
-            int(coords[0] / x_scale), int(coords[1] / y_scale), 4, MAGENTA
-        )
-        display.txt_color(WHITE, BLACK)
-        display.txt_set_cursor(display.width // 2 - 220, display.height // 2 - 20)
-        display.txt_size(2)
-        display.txt_write(
-            "Position ("
-            + str(int(coords[0] / x_scale))
-            + ", "
-            + str(int(coords[1] / y_scale))
-            + ")"
-        )
-
-
-'''
