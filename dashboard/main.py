@@ -186,8 +186,8 @@ rtc.datetime = t
 # rtc.datetime(struct_time(tm_year=2010, tm_mon=1, tm_mday=1, tm_hour=0, tm_min=23, tm_sec=59, tm_wday=0, tm_yday=-1, tm_isdst=-1))
 
 while(1):
-    # print("value of hall pin :{}", hall_pin.value)
-    # print("Value of light pin\n", light_pin.value)
+    print("value of hall pin :{}", hall_pin.value)
+    print("Value of light pin\n", light_pin.value)
 
     if(prev_val_light is not light_pin.value):
         if(light_pin.value):
