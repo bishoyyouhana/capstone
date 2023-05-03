@@ -70,7 +70,7 @@ class BMP:
                 disp.setxy(x, self.height - line + y)
                 disp.push_pixels(current_line_data)
             disp.set_window(0, 0, disp.width, disp.height)
-‘’'
+'''
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(12, GPIO.IN)
@@ -83,7 +83,7 @@ while True:
         time.sleep(1)
     else:
         pass
-‘’'
+'''
 try:
     import struct
 except ImportError:
